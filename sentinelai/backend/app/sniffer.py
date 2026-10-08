@@ -141,6 +141,17 @@ def sniff_dom(
     findings: list[Finding] = []
 
     for node in nodes:
+        # ── Alt / title attribute payloads ──
+        for attr_name, attr_val in [("alt-attr", node.alt), ("title-attr", node.title_attr)]:
+            val = (attr_val or "").strip()
+            if len(val) >= _MIN_PAYLOAD_LEN and val not in visible_text:
+                findings.append(Finding(
+                    selector=node.selector,
+                    technique=attr_name,
+                    extracted_text=val[:2000],
+                    risk=_risk_for_technique(attr_name),
+                ))
+
         # ── Visibility delta: textContent has text the human can't see ──
         tc = (node.text_content or "").strip()
         it = (node.inner_text or "").strip()
@@ -167,17 +178,6 @@ def sniff_dom(
                 extracted_text=hidden_text[:2000],
                 risk=_risk_for_technique(technique),
             ))
-
-        # ── Alt / title attribute payloads ──
-        for attr_name, attr_val in [("alt-attr", node.alt), ("title-attr", node.title_attr)]:
-            val = (attr_val or "").strip()
-            if len(val) >= _MIN_PAYLOAD_LEN and val not in visible_text:
-                findings.append(Finding(
-                    selector=node.selector,
-                    technique=attr_name,
-                    extracted_text=val[:2000],
-                    risk=_risk_for_technique(attr_name),
-                ))
 
     # ── HTML comments ──
     for i, comment in enumerate(html_comments or []):

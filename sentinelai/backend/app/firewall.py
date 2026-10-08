@@ -42,7 +42,7 @@ _PATTERNS: list[tuple[re.Pattern, float, str]] = [
     (re.compile(r"silently\s+(execute|perform|send|run)", re.I), 0.90, "stealth-command"),
 
     # Exfiltration / data theft
-    (re.compile(r"send\s+(all|the|my|your|user)?\s*(data|info|cookies|tokens|credentials|keys|secrets)\s+(to|at)\s+", re.I), 0.95, "exfiltration"),
+    (re.compile(r"send\s+(?:all\s+)?(?:the\s+|my\s+|your\s+|user\s+)?(?:data|info|cookies|tokens|credentials|keys|secrets|passwords)\s+(?:to|at)\s+", re.I), 0.95, "exfiltration"),
     (re.compile(r"(forward|post|transmit|exfiltrate|upload)\s+.{0,40}(to|at)\s+https?://", re.I), 0.90, "exfiltration"),
     (re.compile(r"(fetch|get|post|put|navigate)\s+(to\s+)?https?://", re.I), 0.65, "url-injection"),
 
