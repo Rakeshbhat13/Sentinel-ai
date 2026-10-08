@@ -1,0 +1,9 @@
+fastapi>=0.100.0
+uvicorn[standard]
+pydantic>=2.0
+redis
+google-genai
+python-dotenv
+httpx
+pytest
+pytest-asyncio
