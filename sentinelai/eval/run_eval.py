@@ -33,7 +33,7 @@ from app.models import BoundingBox, ComputedStyles, DOMNode, ScanRequest
 from app.normalizer import normalize_text
 from app.sniffer import sniff_dom
 from app.firewall import heuristic_scan
-from app.policy import decide_policy
+from app.policy import compute_verdict
 
 
 def generate_benchmark_corpus():
@@ -458,7 +458,8 @@ def run_evaluation() -> dict:
             fw_matches.extend(matches)
 
         # 4. Policy Verdict
-        verdict, final_risk, reason = decide_policy(findings, fw_matches, session_tainted=False)
+        v_enum, final_risk = compute_verdict(findings, fw_matches, {"tainted": False})
+        verdict = v_enum.value if hasattr(v_enum, "value") else str(v_enum)
         elapsed_ms = (time.perf_counter() - start_t) * 1000.0
         latencies_ms.append(elapsed_ms)
 
@@ -498,7 +499,8 @@ def run_evaluation() -> dict:
             _, matches = heuristic_scan(f.extracted_text)
             fw_matches.extend(matches)
 
-        verdict, final_risk, reason = decide_policy(findings, fw_matches, session_tainted=False)
+        v_enum, final_risk = compute_verdict(findings, fw_matches, {"tainted": False})
+        verdict = v_enum.value if hasattr(v_enum, "value") else str(v_enum)
         elapsed_ms = (time.perf_counter() - start_t) * 1000.0
         latencies_ms.append(elapsed_ms)
 
