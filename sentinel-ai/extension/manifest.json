@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "SentinelAI",
+  "version": "1.0.0",
+  "description": "Autonomous security shield detecting indirect prompt injection and browser agent hijacking.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
