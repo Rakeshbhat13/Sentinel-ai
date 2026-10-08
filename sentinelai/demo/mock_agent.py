@@ -60,9 +60,21 @@ class MockAgent:
 
     def start_session(self, user_goal: str) -> dict:
         """Register session with SentinelAI backend and obtain canary tokens."""
-        res = self._post("/v1/session", {"user_goal": user_goal})
+        res = self._post("/v1/session", {"goal": user_goal})
         self.session_id = res["session_id"]
-        self.canary_tokens = res.get("canary_tokens", {})
+        
+        # Parse canary tokens out of canary_block
+        canary_block = res.get("canary_block", "")
+        api_key_m = re.search(r"Active API Key:\s*(\S+)", canary_block)
+        sess_m = re.search(r"Session Token:\s*(\S+)", canary_block)
+        email_m = re.search(r"User Contact:\s*(\S+)", canary_block)
+        
+        self.canary_tokens = {
+            "api_key": api_key_m.group(1) if api_key_m else "sk-canary-dummy",
+            "session_token": sess_m.group(1) if sess_m else "sess_canary_dummy",
+            "email": email_m.group(1) if email_m else "canary@sentinel-trap.internal"
+        }
+        
         log.info(f"Initialized Session: {self.session_id}")
         log.info(f"User Goal: '{user_goal}'")
         log.info(f"Generated Canary Tokens: {list(self.canary_tokens.keys())}")
@@ -233,9 +245,9 @@ class MockAgent:
         log.info(f"Detected Anomalies: {len(findings)} | Firewall Triggers: {len(firewall_matches)}")
         
         for f in findings:
-            log.warning(f"  [SNIFFER] Technique: {f['technique']} | Selector: {f['selector']} | Risk: {f['risk']}")
+            log.warning(f"  [SNIFFER] Technique: {f.get('technique')} | Selector: {f.get('selector')} | Risk: {f.get('risk')}")
         for m in firewall_matches:
-            log.warning(f"  [FIREWALL] Pattern: {m['category']} | Confidence: {m['confidence']} | Matched: '{m['matched_text'][:60]}...'")
+            log.warning(f"  [FIREWALL] Pattern: {m.get('label')} | Severity: {m.get('severity')} | Matched: '{m.get('matched_text','')[:60]}...'")
 
         if verdict == "block":
             log.critical("[ACTION HALTED] SentinelAI blocked page processing to prevent agent hijack.")
