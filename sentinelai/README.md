@@ -197,6 +197,19 @@ sentinelai/
 
 ---
 
+## 🔒 Security & Code Quality
+
+SentinelAI enforces strict security standards via GitHub Actions:
+- **SAST scanning**: Semgrep + Bandit + CodeQL catch injection flaws, crypto misuse, logic bugs
+- **Type safety**: mypy in strict mode
+- **Code quality**: pylint (>8.5), black formatting
+- **Dependency audit**: pip-audit + npm audit
+- **Secrets detection**: TruffleHog prevents credential leaks
+
+All checks must pass before merge.
+
+---
+
 ## 🛡️ License
 
 MIT License • Built for the Digital Safety & Cybersecurity Hackathon 2026.
