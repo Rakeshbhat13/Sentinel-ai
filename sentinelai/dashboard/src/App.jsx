@@ -5,6 +5,8 @@ import {
   XCircle, ArrowRight, Database, Globe, Zap, Search, ChevronRight
 } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('diff'); // 'diff' | 'firewall' | 'egress' | 'trail'
   const [session, setSession] = useState(null);
@@ -76,11 +78,11 @@ export default function App() {
     setLoading(true);
     try {
       // Check health
-      const hRes = await fetch('/v1/health').then(r => r.json()).catch(() => null);
+      const hRes = await fetch(`${API_BASE}/v1/health`).then(r => r.json()).catch(() => null);
       if (hRes) setHealth(hRes);
 
       // Create session
-      const sRes = await fetch('/v1/session', {
+      const sRes = await fetch(`${API_BASE}/v1/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ goal: "Analyze customer sentiment and summarize key feedback" })
@@ -104,7 +106,7 @@ export default function App() {
 
   const fetchTrail = async (sid) => {
     try {
-      const res = await fetch(`/v1/trail/${sid}`).then(r => r.json());
+      const res = await fetch(`${API_BASE}/v1/trail/${sid}`).then(r => r.json());
       if (res?.events) setAuditEvents(res.events);
     } catch {
       // Fallback events
@@ -115,7 +117,7 @@ export default function App() {
     if (!session) return;
     setLoading(true);
     try {
-      const res = await fetch('/v1/egress', {
+      const res = await fetch(`${API_BASE}/v1/egress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
